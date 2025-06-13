@@ -19,6 +19,10 @@
     <string name="edit_film">Edit Film</string>
 
     <string name="nama_film">Nama Film</string>
+    <string name="pemeran">Pemeran</string>
+    <string name="lihat_daftar_film">Lihat Daftar Filmku</string>
+    <string name="detail_film">Deskripsi Film</string>
+    <string name="kembali">Kembali</string>
 
     <string name="konfirmasi_hapus">Yakin ingin menghapus data ini?</string>
 
