@@ -65,6 +65,8 @@ dependencies {
     implementation(libs.converter.moshi)
     implementation(libs.moshi.kotlin)
     implementation(libs.coil.compose)
+    implementation("androidx.compose.material:material-icons-extended-android:1.6.7")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
 
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)

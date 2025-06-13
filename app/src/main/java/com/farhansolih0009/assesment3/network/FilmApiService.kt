@@ -1,24 +1,29 @@
 package com.farhansolih0009.assesment3.network
 
 import com.farhansolih0009.assesment3.model.Film
-import com.farhansolih0009.assesment3.model.OpStatus
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import retrofit2.http.DELETE
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.Multipart
-import retrofit2.http.POST
-import retrofit2.http.PUT
-import retrofit2.http.Part
-import retrofit2.http.Path
+import retrofit2.http.*
 
-// PENTING: Ganti dengan URL Render Anda yang sudah di-deploy
-private const val BASE_URL = "https://wide-bittersweet-cruiser.glitch.me/"
+// PENTING: URL ini harus sesuai dengan URL Railway Anda
+private const val BASE_URL = "https://api-film-production-b846.up.railway.app/"
+
+// --- Model untuk request dan response Auth ---
+data class GoogleLoginRequest(
+    val token: String
+)
+
+data class AuthResponse(
+    val id: Int,
+    val email: String,
+    val accessToken: String
+)
+// ---------------------------------------------
 
 private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
@@ -30,33 +35,43 @@ private val retrofit = Retrofit.Builder()
     .build()
 
 interface FilmApiService {
-    @GET("films")
-    suspend fun getFilm(
-        @Header("Authorization") userId: String
-    ): List<Film>
+    // Auth
+    @POST("api/auth/google")
+    suspend fun loginWithGoogle(@Body request: GoogleLoginRequest): AuthResponse
 
-    @Multipart
-    @POST("films")
-    suspend fun postFilm(
-        @Header("Authorization") userId: String,
-        @Part("name") name: RequestBody,
-        @Part image: MultipartBody.Part
-    ): OpStatus
+    // Get (Read)
+    @GET("api/films")
+    suspend fun getFilms(): List<Film>
 
+    // Create
     @Multipart
-    @PUT("films/{id}")
+    @POST("api/films")
+    suspend fun addFilm(
+        @Header("Authorization") token: String,
+        @Part("nama_film") namaFilm: RequestBody,
+        @Part("pemeran") pemeran: RequestBody,
+        @Part("deskripsi") deskripsi: RequestBody, // <-- TAMBAHKAN INI
+        @Part gambar: MultipartBody.Part
+    ): Film
+
+    // Update
+    @Multipart
+    @PUT("api/films/{id}")
     suspend fun updateFilm(
-        @Header("Authorization") userId: String,
-        @Path("id") filmId: String,
-        @Part("name") name: RequestBody,
-        @Part image: MultipartBody.Part? // Gambar sekarang opsional
-    ): OpStatus
+        @Header("Authorization") token: String,
+        @Path("id") filmId: Int,
+        @Part("nama_film") namaFilm: RequestBody,
+        @Part("pemeran") pemeran: RequestBody,
+        @Part("deskripsi") deskripsi: RequestBody, // <-- TAMBAHKAN INI
+        @Part gambar: MultipartBody.Part?
+    ): Film
 
-    @DELETE("films/{id}")
-    suspend fun deleteFilmWithPath(
-        @Header("Authorization") userId: String,
-        @Path("id") filmId: String
-    ): OpStatus
+    // Delete
+    @DELETE("api/films/{id}")
+    suspend fun deleteFilm(
+        @Header("Authorization") token: String,
+        @Path("id") filmId: Int
+    ): Response<Unit>
 }
 
 object FilmApi {
@@ -64,5 +79,3 @@ object FilmApi {
         retrofit.create(FilmApiService::class.java)
     }
 }
-
-enum class ApiStatus { LOADING, SUCCESS, FAILED }
