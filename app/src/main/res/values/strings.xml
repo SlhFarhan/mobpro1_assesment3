@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Filmku</string>
+    <string name="app_name">Filmpedia</string>
 
     <string name="profil">Profil Pengguna</string>
     <string name="error">Terjadi Kesalahan</string>
